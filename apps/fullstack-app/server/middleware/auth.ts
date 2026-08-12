@@ -22,6 +22,6 @@ export default defineEventHandler(async (event) => {
 
   if (!session) {
     const sendTo = `${pathname}${requestURL.search}`;
-    return redirect(`/?sendTo=${encodeURIComponent(sendTo)}`, 302);
+    return redirect(`/sign-in?sendTo=${encodeURIComponent(sendTo)}`, 302);
   }
 });

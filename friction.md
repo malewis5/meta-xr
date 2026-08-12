@@ -86,9 +86,17 @@ siblings `@iwsdk/locomotor`, `@iwsdk/xr-input`), so the host app's aliased
 Alternatively/additionally, `@iwsdk/vite-plugin-dev` should add `@pmndrs/uikit`
 to its dedupe list.
 
-**Local workaround.** Root `pnpm.overrides`: `"three": "npm:super-three@0.181.0"`,
-forcing every `three` resolution onto the alias, which collapses the graph to a
-single three and a single uikit build (matching what npm hoisting produces).
+**Local workaround.** Workspace-wide override in `pnpm-workspace.yaml`:
+`"three@*": npm:super-three@0.181.0`, forcing every `three` resolution onto the
+alias, which collapses the graph to a single three and a single uikit build
+(matching what npm hoisting produces).
+
+Gotcha hit while applying it (pnpm behavior, useful for anyone reproducing):
+adding the override to a workspace with an **existing** `pnpm-lock.yaml` does
+not re-resolve already-locked edges — even with `pnpm install --force`,
+auto-installed peers (e.g. `@iwsdk/xr-input`'s `three >=0.160.0`) kept
+`three@0.185.1`. The override only applies fully on a fresh resolve
+(delete `pnpm-lock.yaml`, reinstall).
 
 ---
 

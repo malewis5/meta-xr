@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+
+onlyBuiltDependencies:
+  - '@meta-quest/metavr'
+  - esbuild
+  - onnxruntime-node
+  - protobufjs

@@ -2,9 +2,11 @@ node_modules/
 dist/
 .turbo/
 .output/
+apps/fullstack-app/generated/
 .env
 .env.*
 !.env.example
 .DS_Store
 v0-mvp.md
 .vercel
+.env*

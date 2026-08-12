@@ -7,3 +7,4 @@ dist/
 !.env.example
 .DS_Store
 v0-mvp.md
+.vercel

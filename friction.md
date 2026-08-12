@@ -185,3 +185,45 @@ pnpm dedupes onto the same store copies: `@babylonjs/havok@^1.3.14`,
 `@zappar/msdf-generator@^1.2.4`, `lucide@^0.468.0`, `preact@^10.29.8`,
 `three-viewport-gizmo@^2.2.0`, `@iwsdk/scene-composition@0.5.1`. Verified
 `browserCommandReady: true` and a clean runtime render afterwards.
+
+---
+
+## 5. `@iwsdk/cli`: launching a second app's managed browser closes the first app's managed browser
+
+**Severity:** low/medium — self-healing, but the first app's command bridge
+silently drops to not-ready; anything scripted against it starts failing until
+the next request triggers a relaunch.
+
+**What happens.** With two scaffolds in one workspace running concurrently
+(`desktop-app` on 8081, `vr-app` on 8091, separate `iwsdk dev up` sessions):
+launching the second app's managed browser coincided with the first app's
+managed browser closing. Both dev logs show the same line at that moment:
+
+```
+🔄 IWSDK: Browser closed. Will relaunch on next MCP request.
+```
+
+and the first app's `dev status` flips to `browserConnected: false`,
+`browserCommandReady: false` with `"status": "disconnected"` — with no error
+surfaced in the session that lost its window.
+
+Issuing any browser-backed command (e.g. `iwsdk browser screenshot`) relaunches
+the window on demand, after which **both** sessions report
+`browserCommandReady: true` and remain stable side by side, commands working
+against each concurrently.
+
+**Suspected mechanism** (not fully root-caused): the two CLI daemons appear to
+share managed-browser state (profile/user-data-dir or singleton lock), so the
+second launch tears down the first window; the on-demand relaunch then creates
+a coexisting instance. Documented as observed behavior — reproduction was
+consistent across the initial launch and one relaunch cycle in this workspace.
+
+**Expected.** Managed browser instances should be isolated per workspace
+session (unique user-data-dir per project), or the closure should at least be
+reported as a warning in the affected session's status/logs rather than a
+silent disconnect.
+
+**Local workaround.** None needed — the bridge relaunches on the next
+browser-backed request. Be aware that after starting a second app, the first
+app's next scene/ecs/xr/browser command pays a relaunch delay (and transient
+failures right at that boundary are expected).

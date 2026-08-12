@@ -6,3 +6,7 @@ onlyBuiltDependencies:
   - esbuild
   - onnxruntime-node
   - protobufjs
+
+overrides:
+  sharp: 0.35.3
+  "three@*": npm:super-three@0.181.0

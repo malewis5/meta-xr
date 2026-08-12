@@ -5,25 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { iwsdkDev } from '@iwsdk/vite-plugin-dev';
-import { defineConfig } from 'vite';
+import { iwsdkDev } from "@iwsdk/vite-plugin-dev";
+import { nitro } from "nitro/vite";
+import { defineConfig } from "vite";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [iwsdkDev()],
+  plugins: [iwsdkDev(), nitro()],
   // Each app in this workspace owns a fixed port; strictPort surfaces
   // collisions loudly instead of silently drifting (desktop-app uses 8081).
-  server: { host: '0.0.0.0', port: 8091, strictPort: true, open: false },
+  server: { host: "0.0.0.0", port: 8091, strictPort: true, open: false },
   build: {
-    outDir: 'dist',
-    sourcemap: mode !== 'production',
-    target: 'esnext',
-    rollupOptions: { input: './index.html' },
+    // Nitro owns the output directory; Vite still owns client compilation.
+    sourcemap: mode !== "production",
+    target: "esnext",
   },
-  esbuild: { target: 'esnext' },
+  esbuild: { target: "esnext" },
   optimizeDeps: {
-    exclude: ['@babylonjs/havok'],
-    esbuildOptions: { target: 'esnext' },
+    exclude: ["@babylonjs/havok"],
+    esbuildOptions: { target: "esnext" },
   },
-  publicDir: 'public',
-  base: './',
 }));

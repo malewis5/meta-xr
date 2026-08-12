@@ -7,6 +7,7 @@
 
 import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
+import { desktopWorldOptions } from './desktop-world-options.js';
 import { PanelSystem } from './panel.js';
 import { RobotSystem } from './robot.js';
 
@@ -26,12 +27,29 @@ function showStartupError() {
   loadingError?.removeAttribute('hidden');
 }
 
+async function supportsImmersiveVR() {
+  const xr = navigator.xr;
+  if (!xr) {
+    return false;
+  }
+
+  try {
+    return await xr.isSessionSupported('immersive-vr');
+  } catch {
+    return false;
+  }
+}
+
 async function initializeWorld() {
   if (!(sceneContainer instanceof HTMLDivElement)) {
     throw new Error('The scene container is missing.');
   }
 
-  const world = await World.create(sceneContainer, projectOptions);
+  const useXR = await supportsImmersiveVR();
+  const worldOptions = useXR
+    ? projectOptions
+    : { ...projectOptions, world: desktopWorldOptions };
+  const world = await World.create(sceneContainer, worldOptions);
   world.registerSystem(RobotSystem);
   world.registerSystem(PanelSystem);
   showWorld();

@@ -2,8 +2,14 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": [".output/**"],
-      "env": ["DATABASE_URL", "BETTER_AUTH_SECRET", "BETTER_AUTH_URL"],
+      "outputs": [".vercel/output/**"],
+      "env": [
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "PRISMA_DATABASE_URL",
+        "BETTER_AUTH_SECRET",
+        "BETTER_AUTH_URL"
+      ],
       "inputs": ["$TURBO_DEFAULT$", ".env", ".env.*"]
     }
   }

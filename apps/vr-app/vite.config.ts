@@ -10,7 +10,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [iwsdkDev()],
-  server: { host: '0.0.0.0', port: 8081, open: false },
+  // Each app in this workspace owns a fixed port; strictPort surfaces
+  // collisions loudly instead of silently drifting (desktop-app uses 8081).
+  server: { host: '0.0.0.0', port: 8091, strictPort: true, open: false },
   build: {
     outDir: 'dist',
     sourcemap: process.env.NODE_ENV !== 'production',

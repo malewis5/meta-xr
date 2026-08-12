@@ -4,6 +4,12 @@ const appScriptSource = import.meta.dev
   ? "/src/entry.ts"
   : "/assets/app-entry.js";
 
+// Vite injects IWER into index.html via transformIndexHtml. /app is served by
+// Nitro, so the emulator must be added here or Chrome has no XR runtime.
+const emulatorScript = import.meta.dev
+  ? `\n    <script type="module" src="/@iwer-injection-runtime"></script>`
+  : "";
+
 export default defineEventHandler(
   () =>
     new Response(
@@ -13,7 +19,7 @@ export default defineEventHandler(
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
-    <title>Meta XR</title>
+    <title>Meta XR</title>${emulatorScript}
     <style>
       :root { background: #0b1020; color: #f8fafc; font-family: system-ui, sans-serif; }
       body { margin: 0; }

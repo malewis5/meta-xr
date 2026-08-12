@@ -1,6 +1,7 @@
 <!--
   Panel, Divider, Button, ButtonIcon, and ButtonLabel come from the bundled
-  Horizon kit. RectangleGoggles and LogIn are bundled Lucide icon components.
+  Horizon kit. RectangleGoggles, LogIn, and LogOut are bundled Lucide icon
+  components.
 -->
 <style>
   @font-face {
@@ -67,6 +68,9 @@
     margin-left: 24px;
     margin-right: 24px;
     margin-top: 16px;
+  }
+
+  .button-last {
     margin-bottom: 24px;
   }
 
@@ -94,5 +98,11 @@
       <LogIn></LogIn>
     </ButtonIcon>
     <ButtonLabel class="button-label">Exit to Browser</ButtonLabel>
+  </Button>
+  <Button id="sign-out-button" class="button button-last">
+    <ButtonIcon>
+      <LogOut></LogOut>
+    </ButtonIcon>
+    <ButtonLabel class="button-label">Sign Out</ButtonLabel>
   </Button>
 </Panel>

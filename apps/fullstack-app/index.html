@@ -13,17 +13,18 @@
       }
 
       body {
-        align-items: center;
-        background: radial-gradient(circle at top, #312e81, #0f172a 60%);
-        display: grid;
         margin: 0;
-        min-height: 100vh;
-        padding: 1.5rem;
       }
 
       main {
-        margin: auto;
-        max-width: 42rem;
+        align-content: center;
+        background: radial-gradient(circle at top, #312e81, #0f172a 60%);
+        box-sizing: border-box;
+        display: grid;
+        inset: 0;
+        justify-items: center;
+        padding: 1.5rem;
+        position: fixed;
         text-align: center;
       }
 
@@ -31,6 +32,7 @@
         font-size: clamp(2.5rem, 8vw, 5rem);
         letter-spacing: -0.05em;
         margin: 0;
+        max-width: 42rem;
       }
 
       p {
@@ -38,6 +40,7 @@
         font-size: 1.125rem;
         line-height: 1.6;
         margin: 1.25rem 0 2rem;
+        max-width: 42rem;
       }
 
       .actions {
@@ -71,6 +74,5 @@
         <a href="/sign-up">Create an account</a>
       </div>
     </main>
-    <script type="module" src="/src/entry.ts"></script>
   </body>
 </html>

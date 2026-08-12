@@ -7,6 +7,7 @@ const AUTH_FORM_ROUTES = [
   /^\/sign-in\//,
   "/sign-up",
   /^\/sign-up\//,
+  "/",
 ];
 
 const matchesRoute = (pathname: string, routes: Array<string | RegExp>) =>

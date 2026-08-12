@@ -6,10 +6,23 @@
  */
 
 import { createSystem, UIKitMLAsset, VisibilityState } from '@iwsdk/core';
+import { authClient } from './auth-client.js';
 
 export class PanelSystem extends createSystem({}) {
   init(): void {
     const panel = this.world.getSceneObject<UIKitMLAsset>('welcome-panel');
+    const signOutButton = panel?.getElementById('sign-out-button');
+    if (signOutButton != null) {
+      const signOut = async () => {
+        await authClient.signOut();
+        window.location.assign('/sign-in');
+      };
+      signOutButton.addEventListener('click', signOut);
+      this.cleanupFuncs.push(() =>
+        signOutButton.removeEventListener('click', signOut),
+      );
+    }
+
     const xrButton = panel?.getElementById('xr-button');
     const exitButton = panel?.getElementById('exit-button');
     if (xrButton == null || exitButton == null) {

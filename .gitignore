@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .turbo/
+.output/
 .env
 .env.*
 !.env.example
 .DS_Store
 v0-mvp.md
+.vercel

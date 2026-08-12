@@ -8,14 +8,14 @@
 import { iwsdkDev } from '@iwsdk/vite-plugin-dev';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [iwsdkDev()],
   // Each app in this workspace owns a fixed port; strictPort surfaces
   // collisions loudly instead of silently drifting (desktop-app uses 8081).
   server: { host: '0.0.0.0', port: 8091, strictPort: true, open: false },
   build: {
     outDir: 'dist',
-    sourcemap: process.env.NODE_ENV !== 'production',
+    sourcemap: mode !== 'production',
     target: 'esnext',
     rollupOptions: { input: './index.html' },
   },
@@ -26,4 +26,4 @@ export default defineConfig({
   },
   publicDir: 'public',
   base: './',
-});
+}));

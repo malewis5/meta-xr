@@ -1,6 +1,7 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": ["SOCKET_PASSWORD_B64"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

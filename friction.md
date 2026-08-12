@@ -127,3 +127,61 @@ export default defineConfig(({ mode }) => ({
 
 **Local workaround.** Config is scaffolded into the app, so we fix our copies
 directly; upstream fix belongs in the create template.
+
+---
+
+## 4. `@iwsdk/vite-plugin-dev` + scaffold: module resolution assumes npm hoisting; dev server 500s and the editor never becomes ready under pnpm
+
+**Severity:** high — with a pnpm install the app 500s on page load and
+`iwsdk dev up` ends in `browser_launch_failed` (`page.waitForFunction: Timeout
+15000ms exceeded`); `browserCommandReady` never turns true, so every
+browser-backed MCP/CLI command is dead.
+
+**What happens.** Two mechanisms, one root cause:
+
+1. **`optimizeDeps` exclusions.** The scaffolded `vite.config.ts` excludes
+   `@babylonjs/havok`, and the plugin force-excludes `@zappar/msdf-generator`,
+   `lucide`, and `preact` (`OPTIMIZER_EXCLUSIONS`). Vite resolves excluded bare
+   imports reached from optimized chunks (`node_modules/.vite/deps/chunk-*.js`)
+   against the **app root**. None of these packages are dependencies of the
+   app — they are transitive deps of `@iwsdk/core` / `@pmndrs/uikit`. npm's
+   hoisting happens to make them resolvable from the app; pnpm's isolated
+   layout does not:
+
+   ```
+   Failed to resolve import "@babylonjs/havok" from "node_modules/.vite/deps/chunk-E2EWVJN5.js"
+   Failed to resolve import "@zappar/msdf-generator" from "node_modules/.vite/deps/chunk-TTVYMRKM.js"
+   ```
+
+2. **Virtual-module bare imports.** The plugin composes the editor's virtual
+   module `/@iwsdk-editor-runtime` (`createEditorRuntimeModuleSource`) using
+   helper functions that probe hardcoded relative candidate paths
+   (`../node_modules/three-viewport-gizmo/...`,
+   `../../../core/src/index.ts`, ...) which only exist in the iwsdk monorepo
+   checkout or an npm-hoisted install. When every candidate misses, they fall
+   back to bare specifiers (`three-viewport-gizmo`,
+   `@iwsdk/scene-composition`). A virtual module has no filesystem location,
+   so Vite resolves those from the app root — unresolvable under pnpm:
+
+   ```
+   Failed to resolve import "three-viewport-gizmo" from "\0/@iwsdk-editor-runtime"
+   ```
+
+   The editor shell therefore 500s, the managed browser's readiness
+   `waitForFunction` times out, and the session reports
+   `browser_launch_failed` even though the **runtime** role boots fine (the
+   IWSDK banner logs with zero console errors).
+
+**Expected.** The plugin should resolve its editor-runtime imports to
+absolute `/@fs/` paths using `createRequire(import.meta.url).resolve(...)`
+from its own package location instead of relative-path probing with
+bare-specifier fallbacks. Packages the plugin/scaffold exclude from
+`optimizeDeps` should be scaffolded as direct app dependencies (Vite's
+documented requirement for excluded deps).
+
+**Local workaround.** Declared all six hoisting-dependent packages as direct
+dependencies of each app, pinned to the versions already in the SDK graph so
+pnpm dedupes onto the same store copies: `@babylonjs/havok@^1.3.14`,
+`@zappar/msdf-generator@^1.2.4`, `lucide@^0.468.0`, `preact@^10.29.8`,
+`three-viewport-gizmo@^2.2.0`, `@iwsdk/scene-composition@0.5.1`. Verified
+`browserCommandReady: true` and a clean runtime render afterwards.

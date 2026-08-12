@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => ({
     // Nitro owns the output directory; Vite still owns client compilation.
     sourcemap: mode !== "production",
     target: "esnext",
+    rollupOptions: {
+      output: {
+        entryFileNames: "assets/app-entry.js",
+      },
+    },
   },
   esbuild: { target: "esnext" },
   optimizeDeps: {

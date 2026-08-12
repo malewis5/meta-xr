@@ -1,10 +1,10 @@
 import { defineEventHandler, getRequestURL, redirect } from "h3";
 import { auth } from "../utils/auth";
 
-const PUBLIC_ROUTES = ["/", /^\/api\/auth(?:\/|$)/];
+const PROTECTED_ROUTES = ["/app", /^\/app\//];
 
-const isPublicRoute = (pathname: string) =>
-  PUBLIC_ROUTES.some((route) =>
+const requiresSession = (pathname: string) =>
+  PROTECTED_ROUTES.some((route) =>
     typeof route === "string" ? pathname === route : route.test(pathname),
   );
 
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const requestURL = getRequestURL(event);
   const { pathname } = requestURL;
 
-  if (isPublicRoute(pathname)) {
+  if (!requiresSession(pathname)) {
     return;
   }
 

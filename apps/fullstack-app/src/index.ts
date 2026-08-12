@@ -10,10 +10,34 @@ import projectOptions from 'virtual:iwsdk-project';
 import { PanelSystem } from './panel.js';
 import { RobotSystem } from './robot.js';
 
-World.create(
-  document.getElementById('scene-container') as HTMLDivElement,
-  projectOptions,
-).then((world) => {
+const sceneContainer = document.getElementById('scene-container');
+const loadingScreen = document.getElementById('loading-screen');
+const loadingMessage = document.getElementById('loading-message');
+const loadingError = document.getElementById('loading-error');
+
+function showWorld() {
+  sceneContainer?.setAttribute('aria-busy', 'false');
+  loadingScreen?.classList.add('is-ready');
+  window.setTimeout(() => loadingScreen?.remove(), 200);
+}
+
+function showStartupError() {
+  loadingMessage?.setAttribute('hidden', '');
+  loadingError?.removeAttribute('hidden');
+}
+
+async function initializeWorld() {
+  if (!(sceneContainer instanceof HTMLDivElement)) {
+    throw new Error('The scene container is missing.');
+  }
+
+  const world = await World.create(sceneContainer, projectOptions);
   world.registerSystem(RobotSystem);
   world.registerSystem(PanelSystem);
+  showWorld();
+}
+
+initializeWorld().catch((error: unknown) => {
+  console.error('Unable to initialize the Meta XR experience.', error);
+  showStartupError();
 });
